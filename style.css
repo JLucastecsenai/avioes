@@ -1,0 +1,199 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 120px;
+  position: relative;
+  overflow-x: hidden;
+  background: linear-gradient(to bottom, #87ceeb 0%, #a0c4ff 50%, #264653 100%);
+  /* Céu azul claro para cima e escurecendo para baixo */
+}
+/* Nuvens */
+.cloud {
+  position: fixed;
+  background: #fff;
+  background: linear-gradient(top, #fff 5%, #f1f1f1 100%);
+  border-radius: 100px;
+  box-shadow:
+    20px 10px 20px rgba(0,0,0,0.05);
+  opacity: 0.85;
+  filter: drop-shadow(0 0 3px rgba(0,0,0,0.05));
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  z-index: -1;
+}
+.cloud:before,
+.cloud:after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  z-index: -1;
+  border-radius: 100px;
+}
+.cloud:before {
+  width: 60px;
+  height: 60px;
+  top: -30px;
+  left: 10px;
+  box-shadow: 20px 20px 20px rgba(0,0,0,0.05);
+}
+.cloud:after {
+  width: 40px;
+  height: 40px;
+  top: -15px;
+  right: 10px;
+  box-shadow: 20px 20px 20px rgba(0,0,0,0.05);
+}
+
+/* 3 nuvens diferentes com animação horizontal */
+#cloud1 {
+  top: 150px;
+  left: -200px;
+  width: 150px;
+  height: 80px;
+  animation-name: moveCloud1;
+  animation-duration: 60s;
+}
+#cloud2 {
+  top: 300px;
+  left: -250px;
+  width: 200px;
+  height: 100px;
+  animation-name: moveCloud2;
+  animation-duration: 80s;
+  animation-delay: 10s;
+}
+#cloud3 {
+  top: 450px;
+  left: -180px;
+  width: 120px;
+  height: 70px;
+  animation-name: moveCloud3;
+  animation-duration: 65s;
+  animation-delay: 20s;
+}
+
+@keyframes moveCloud1 {
+  0% { left: -200px; }
+  100% { left: 110vw; }
+}
+@keyframes moveCloud2 {
+  0% { left: -250px; }
+  100% { left: 120vw; }
+}
+@keyframes moveCloud3 {
+  0% { left: -180px; }
+  100% { left: 100vw; }
+}
+
+/* Resto do CSS do site (header, main, footer, etc.) */
+header {
+  background-color: #0077b6cc;
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+}
+header h1 {
+  font-size: 2.5rem;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+}
+main {
+  padding: 30px 20px;
+  max-width: 1000px;
+  margin: auto;
+  position: relative;
+  z-index: 10;
+  background: rgba(255 255 255 / 0.9);
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.1);
+}
+section {
+  margin-bottom: 40px;
+  background-color: #ffffffcc;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+section:hover {
+  transform: scale(1.01);
+}
+h2 {
+  color: #023e8a;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px #a0c4ff;
+}
+p {
+  line-height: 1.6;
+  margin-bottom: 10px;
+  text-shadow: 0 0 2px #eee;
+}
+footer {
+  background-color: #0077b6cc;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  font-weight: bold;
+  z-index: 10;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+.accordion {
+  cursor: pointer;
+  background-color: #caf0f8cc;
+  color: #023e8a;
+  padding: 15px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 1.1rem;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+  border-radius: 5px;
+  text-shadow: 0 0 2px #8ecae6;
+}
+.accordion:hover {
+  background-color: #ade8f4cc;
+}
+.panel {
+  padding: 0 15px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  text-shadow: none;
+}
+.plane-box {
+  background-color: #f8f9facc;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.plane-box img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+#flying-plane {
+  position: fixed;
+  left: 10px;
+  top: 50px;
+  width: 50px;
+  transition: top 0.1s linear;
+  z-index: 1000;
+  user-select: none;
+}
