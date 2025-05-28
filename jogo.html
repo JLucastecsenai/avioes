@@ -49,163 +49,181 @@
     <canvas id="gameCanvas" width="400" height="600"></canvas>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreDisplay = document.getElementById('score');
-    
-        const planeImg = new Image();
-        planeImg.src = 'img/aviao.png';
-    
-        const pipeWidth = 60;
-        const pipeGap = 150;
-        const gravity = 0.5;
-        const jumpStrength = -8;
-    
-        let plane = {
-            x: 80,
-            y: canvas.height / 2,
-            width: 60,
-            height: 45,
-            velocity: 0,
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreDisplay = document.getElementById('score');
+
+    const planeImg = new Image();
+    planeImg.src = 'img/aviao.png';
+
+    const pipeWidth = 60;
+    const pipeGap = 150;
+    const gravity = 0.5;
+    const jumpStrength = -8;
+
+    let plane = {
+        x: 80,
+        y: canvas.height / 2,
+        width: 60,
+        height: 45,
+        velocity: 0,
+    };
+
+    let pipes = [];
+    let frameCount = 0;
+    let score = 0;
+    let gameOver = false;
+    let gameStarted = false;
+
+    function createPipe() {
+        const topHeight = Math.floor(Math.random() * (canvas.height - pipeGap - 100)) + 50;
+        pipes.push({
+            x: canvas.width,
+            topHeight: topHeight,
+            width: pipeWidth,
+            bottomY: topHeight + pipeGap,
+        });
+    }
+
+    function checkCollision(pipe) {
+        const planeHitbox = {
+            x: plane.x + 10,
+            y: plane.y + 10,
+            width: plane.width - 20,
+            height: plane.height - 20,
         };
-    
-        let pipes = [];
-        let frameCount = 0;
-        let score = 0;
-        let gameOver = false;
-    
-        function createPipe() {
-            const topHeight = Math.floor(Math.random() * (canvas.height - pipeGap - 100)) + 50;
-            pipes.push({
-                x: canvas.width,
-                topHeight: topHeight,
-                width: pipeWidth,
-                bottomY: topHeight + pipeGap,
-            });
+
+        const pipeTop = {
+            x: pipe.x,
+            y: 0,
+            width: pipe.width,
+            height: pipe.topHeight,
+        };
+
+        const pipeBottom = {
+            x: pipe.x,
+            y: pipe.bottomY,
+            width: pipe.width,
+            height: canvas.height - pipe.bottomY,
+        };
+
+        function rectsOverlap(r1, r2) {
+            return !(r2.x > r1.x + r1.width ||
+                r2.x + r2.width < r1.x ||
+                r2.y > r1.y + r1.height ||
+                r2.y + r2.height < r1.y);
         }
-    
-        function checkCollision(pipe) {
-            const planeHitbox = {
-                x: plane.x + 10,
-                y: plane.y + 10,
-                width: plane.width - 20,
-                height: plane.height - 20,
-            };
-    
-            const pipeTop = {
-                x: pipe.x,
-                y: 0,
-                width: pipe.width,
-                height: pipe.topHeight,
-            };
-    
-            const pipeBottom = {
-                x: pipe.x,
-                y: pipe.bottomY,
-                width: pipe.width,
-                height: canvas.height - pipe.bottomY,
-            };
-    
-            function rectsOverlap(r1, r2) {
-                return !(r2.x > r1.x + r1.width ||
-                    r2.x + r2.width < r1.x ||
-                    r2.y > r1.y + r1.height ||
-                    r2.y + r2.height < r1.y);
-            }
-    
-            if (rectsOverlap(planeHitbox, pipeTop) || rectsOverlap(planeHitbox, pipeBottom)) {
-                return true;
-            }
-    
-            if (planeHitbox.y < 0 || planeHitbox.y + planeHitbox.height > canvas.height) {
-                return true;
-            }
-    
-            return false;
+
+        if (rectsOverlap(planeHitbox, pipeTop) || rectsOverlap(planeHitbox, pipeBottom)) {
+            return true;
         }
-    
-        function resetGame() {
-            pipes = [];
-            plane.y = canvas.height / 2;
-            plane.velocity = 0;
-            score = 0;
-            gameOver = false;
+
+        if (planeHitbox.y < 0 || planeHitbox.y + planeHitbox.height > canvas.height) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function resetGame() {
+        pipes = [];
+        plane.y = canvas.height / 2;
+        plane.velocity = 0;
+        score = 0;
+        gameOver = false;
+        gameStarted = false;
+        scoreDisplay.textContent = score;
+        frameCount = 0;
+        draw(); // Redesenha a tela no estado inicial
+    }
+
+    function update() {
+        if (gameOver || !gameStarted) return;
+
+        frameCount++;
+
+        if (frameCount % 100 === 0) {
+            createPipe();
+        }
+
+        pipes.forEach(pipe => {
+            pipe.x -= 2;
+        });
+
+        if (pipes.length && pipes[0].x + pipeWidth < 0) {
+            pipes.shift();
+            score++;
             scoreDisplay.textContent = score;
-            frameCount = 0;
         }
-    
-        function update() {
+
+        plane.velocity += gravity;
+        plane.y += plane.velocity;
+
+        for (let pipe of pipes) {
+            if (checkCollision(pipe)) {
+                gameOver = true;
+                alert('Game Over! Sua pontuação: ' + score);
+                return;
+            }
+        }
+
+        draw();
+        requestAnimationFrame(update);
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        pipes.forEach(pipe => {
+            ctx.fillStyle = '#228B22';
+            ctx.fillRect(pipe.x, 0, pipe.width, pipe.topHeight);
+            ctx.fillRect(pipe.x, pipe.bottomY, pipe.width, canvas.height - pipe.bottomY);
+        });
+
+        ctx.save();
+        ctx.translate(plane.x + plane.width / 2, plane.y + plane.height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(planeImg, -plane.width / 2, -plane.height / 2, plane.width, plane.height);
+        ctx.restore();
+
+        if (!gameStarted && !gameOver) {
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Clique para começar', canvas.width / 2, canvas.height / 2 - 50);
+        }
+    }
+
+    window.addEventListener('keydown', e => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
             if (gameOver) return;
-    
-            frameCount++;
-    
-            if (frameCount % 100 === 0) {
-                createPipe();
-            }
-    
-            pipes.forEach(pipe => {
-                pipe.x -= 2;
-            });
-    
-            if (pipes.length && pipes[0].x + pipeWidth < 0) {
-                pipes.shift();
-                score++;
-                scoreDisplay.textContent = score;
-            }
-    
-            plane.velocity += gravity;
-            plane.y += plane.velocity;
-    
-            for (let pipe of pipes) {
-                if (checkCollision(pipe)) {
-                    gameOver = true;
-                    alert('Game Over! Sua pontuação: ' + score);
-                    return;
-                }
-            }
-    
-            draw();
-            requestAnimationFrame(update);
-        }
-    
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-            pipes.forEach(pipe => {
-                ctx.fillStyle = '#228B22';
-                ctx.fillRect(pipe.x, 0, pipe.width, pipe.topHeight);
-                ctx.fillRect(pipe.x, pipe.bottomY, pipe.width, canvas.height - pipe.bottomY);
-            });
-    
-            ctx.save();
-            ctx.translate(plane.x + plane.width / 2, plane.y + plane.height / 2);
-            ctx.rotate(Math.PI / 2);
-            ctx.drawImage(planeImg, -plane.width / 2, -plane.height / 2, plane.width, plane.height);
-            ctx.restore();
-        }
-    
-        window.addEventListener('keydown', e => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                if (!gameOver) {
-                    plane.velocity = jumpStrength;
-                }
-            }
-        });
-    
-        window.addEventListener('click', () => {
-            if (gameOver) {
-                resetGame();
+
+            if (!gameStarted) {
+                gameStarted = true;
                 update();
-            } else {
-                plane.velocity = jumpStrength;
             }
-        });
-    
-        planeImg.onload = () => {
+
+            plane.velocity = jumpStrength;
+        }
+    });
+
+    window.addEventListener('click', () => {
+        if (gameOver) {
             resetGame();
-            update();
-        };
-    </script>    
+        } else {
+            if (!gameStarted) {
+                gameStarted = true;
+                update();
+            }
+            plane.velocity = jumpStrength;
+        }
+    });
+
+    planeImg.onload = () => {
+        resetGame();
+    };
+</script>
+    
 </body>
 
 </html>

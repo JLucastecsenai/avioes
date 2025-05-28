@@ -190,10 +190,79 @@ footer {
 }
 #flying-plane {
   position: fixed;
-  left: 10px;
-  top: 50px;
-  width: 50px;
-  transition: top 0.1s linear;
-  z-index: 1000;
-  user-select: none;
+  left: 30px;
+  top: 0;
+  width: 60px;
+  z-index: 9999;
+  animation: flyUpDown 8s linear infinite;
+  transform-origin: center center;
+  rotate: -90deg;
 }
+
+@keyframes flyUpDown {
+  0% {
+    top: 0;
+    transform: rotate(-90deg); /* avião para cima */
+  }
+  40% {
+    top: calc(100vh - 60px);
+    transform: rotate(-90deg); /* ainda para cima */
+  }
+  45% {
+    top: calc(100vh - 60px);
+    transform: rotate(90deg); /* gira para baixo (180° em relação ao -90°) */
+  }
+  85% {
+    top: 0;
+    transform: rotate(90deg); /* ainda para baixo */
+  }
+  90% {
+    top: 0;
+    transform: rotate(-90deg); /* gira para cima */
+  }
+  100% {
+    top: 0;
+    transform: rotate(-90deg); /* pronto para descer */
+  }
+}
+
+#flying-plane2 {
+  position: fixed;
+  right: 30px;
+  bottom: 0;
+  width: 60px;
+  z-index: 9999;
+  animation: flyUpDown2 8s linear infinite;
+  transform-origin: center center;
+  rotate: -90deg;
+  
+}
+
+@keyframes flyUpDown2 {
+  0% {
+    bottom: 0;
+    transform: rotate(90deg); /* avião para cima */
+  }
+  40% {
+    bottom: calc(100vh - 60px);
+    transform: rotate(90deg); /* ainda para cima */
+  }
+  45% {
+    bottom: calc(100vh - 60px);
+    transform: rotate(-90deg); /* gira para baixo (180° em relação ao -90°) */
+  }
+  85% {
+    bottom: 0;
+    transform: rotate(-90deg); /* ainda para baixo */
+  }
+  90% {
+    bottom: 0;
+    transform: rotate(90deg); /* gira para cima */
+  }
+  100% {
+    bottom: 0;
+    transform: rotate(90deg); /* pronto para descer */
+  }
+}
+
+
